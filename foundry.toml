@@ -3,4 +3,10 @@ src = 'src'
 out = 'out'
 libs = ['lib']
 
+[rpc_endpoints]
+goerli = "https://eth-goerli.alchemyapi.io/v2/${GOERLI_API_KEY}"
+
+[etherscan]
+goerliscan = { key = "${ETHERSCAN_API_KEY}", chain = "goerli" }
+
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config
