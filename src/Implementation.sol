@@ -32,6 +32,9 @@ contract Implementation is HatsAccessControl {
     address eligibilty = address(222);
     address toggle = address(333);
 
+    // test var
+    bool public pass;
+
     constructor(address _admin, address _operator) {
         deployer = msg.sender;
         admin = _admin;
@@ -42,16 +45,26 @@ contract Implementation is HatsAccessControl {
     }
 
     function initTopHat() external {
-        // mint top hat
-        topId = Hats.mintTopHat(deployer, "TopHat", "");
+        // mint top hat to this contract
+        topId = Hats.mintTopHat(address(this), "TopHat", "");
     }
+
+    function checkTopHat() external view returns (bool) {
+        // confirm top hat was minted
+        return Hats.isTopHat(topId);
+    }
+
+    // function setHatsContract() external {
+    //     // changes Hats protocol implementation pointer
+    //     _changeHatsContract(goerli);
+    // }
 
     function createAdminHat() external {
         // create admin hat (child of top hat)
         adminId = Hats.createHat(
             topId,
             "AdminHat",
-            3,
+            2,
             eligibilty,
             toggle,
             false,
@@ -84,6 +97,24 @@ contract Implementation is HatsAccessControl {
         Hats.mintHat(operatorId, operator);
         // set access control
         _grantRole(OPERATOR, operatorId);
+    }
+
+    function transferTopHat() external {
+        Hats.transferHat(topId, address(this), deployer);
+    }
+
+    function testTransfer() external {
+        if (checkWearerOfTopHat() && checkHierarchy()) {
+            pass = true;
+        }
+    }
+
+    function checkWearerOfTopHat() internal view returns (bool) {
+        return Hats.isWearerOfHat(deployer, topId);
+    }
+
+    function checkHierarchy() internal view returns (bool) {
+        return Hats.isAdminOfHat(admin, operatorId);
     }
 
     // TESTS:
